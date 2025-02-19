@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 import cors from 'cors'
 import Stripe from 'stripe'
-
+import nodemailer from 'nodemailer'
 import cookieParser from 'cookie-parser'
 import booking from '../routers/booking.js'
 
@@ -97,15 +97,14 @@ app.post("/create-checkout-session",async(req,res)=>{
             payment_method_types: ["card"],
             line_items: lineItems,
             mode: "payment",
-            success_url: "http://localhost:3000/success",  // Update this with your success page
-            cancel_url: "http://localhost:3000/cancel", 
-            // 
-            //    // Update this with your cancel page
+            success_url: "http://localhost:3000/Success",  
+            cancel_url: "http://localhost:3000/Support", 
+           
+     
 
             
           });
       
-          // Send the session ID back to frontend
           res.json({ id: session.id });
         } catch (error) {
           console.error("Error creating checkout session:", error);
@@ -114,6 +113,37 @@ app.post("/create-checkout-session",async(req,res)=>{
    }
    
    )
+
+   app.post("/api/contact", (req, res) => {
+    const { name, email, message } = req.body;
+  
+    // Create a Nodemailer transporter
+    const transporter = nodemailer.createTransport({
+      service: "gmail", // You can use other services like SendGrid
+      auth: {
+        user: process.env.EMAIL_USER, // Replace with your email
+        pass: process.env.EMAIL_PASS, // Replace with your email password
+      },
+    });
+  
+    // Compose the email
+    const mailOptions = {
+      from: email,
+      to: process.env.EMAIL_USER, // Replace with your email
+      subject: `New Contact Form Submission from ${name}`,
+      text: `You received a message from ${name} (${email}):\n\n${message}`,
+    };
+  
+    // Send the email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error(error);
+        return res.status(500).send("Error sending message");
+      }
+      res.status(200).json({Message:"Message sent successfully"});
+    });
+  });
+  
    app.post("/create-checkout-session3",async(req,res)=>{
      try {
           // Assuming you're sending the products data from frontend to backend
