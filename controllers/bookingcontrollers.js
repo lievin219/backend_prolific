@@ -15,8 +15,7 @@ export const  bookSession = async (req, res) => {
     const booking = await Booking.create({ user: req.user.id, coach: coachId, date, timeSlot });
     res.status(201).json(booking);
   } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+    res.status(400).json({ error: error.message });             }
 };
 
 export const getAvailableSlots = async (req, res) => {
