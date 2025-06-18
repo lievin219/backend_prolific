@@ -6,3 +6,6 @@ booking.post('/', protect, bookSession);
 booking.get('/', protect, getBookings);
 booking.get('/available',protect, getAvailableSlots);
 export default booking
+   
+
+   
